@@ -13,14 +13,14 @@ export default function Navigation(props) {
         props.loggedIn
           ?
             <>
-              <NavLink className="navigation__link" to="/movies">Фильмы</NavLink>
+              <NavLink className="navigation__link navigation__link_active" to="/movies">Фильмы</NavLink>
               <NavLink className="navigation__link" to="/saved-movies">Сохраненные фильмы</NavLink>
-              <NavLink className="navigation__profile-button" to="/profile"></NavLink>
+              <NavLink className="navigation__profile-button" to="/profile">Аккаунт</NavLink>
 
               <button type="buton" className='navigation__burger' onClick={toggleBurger}>
-                <span className="navigation__burger-top"></span>
-                <span className="navigation__burger-middle"></span>
-                <span className="navigation__burger-bottom"></span>
+                <span className="navigation__burger-line"></span>
+                <span className="navigation__burger-line"></span>
+                <span className="navigation__burger-line"></span>
               </button>
             </>
           :

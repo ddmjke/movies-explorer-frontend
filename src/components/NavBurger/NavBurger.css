@@ -1,0 +1,72 @@
+.navburger__overlay {
+  background-color: rgba(0, 0, 0, .3);
+  width: 100vw;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.navburger {
+  background-color: #fff;
+  width: 67vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.navburger__button {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  top: 23px;
+  right: 23px;
+  background-image: url(../../images/CloseIcon.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.navburger__link {
+  color: #000;
+  margin-bottom: 28px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 22px;
+}
+
+.navburger__link_active {
+  text-decoration: underline;
+  cursor: default;
+}
+
+.navburger__link:first-child {
+  margin-top: 159px;
+}
+
+.navburger__profile-button {
+  margin: auto 0 90px;
+  color: #000;
+  border: 2px solid #aaa;
+  border-radius: 50px;
+  display: flex;
+  width: 100px;
+  height: 32px;
+  line-height: 32px;
+  text-decoration: none;
+  justify-content: space-around;
+}
+
+.navburger__profile-button::before {
+  content: url(../../images/ProfileIcon.svg);
+  display: inline;
+  width: 12px;
+  height: 32px;
+}
