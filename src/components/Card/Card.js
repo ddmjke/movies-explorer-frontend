@@ -6,10 +6,15 @@ export default function Card(props) {
       <img className="card__photo" src={fakePhoto} alt={`fake alt #${props.number}`} onClick={e => e} />
       <div className="card__caption">
         <h2 className="card__textbox">fake description #{props.number}</h2>
-        <div className="photo-grid__likewrapper">
-          <button className={`card__save-button`} type="button" onClick={e => e}></button>
-        </div>
+        {
+          props.savedList
+            ?
+            <button className="card__unsave" type="button" onClick={e => e}></button>
+            :
+            <button className="card__saved" type="button" onClick={e => e}></button>
+        }
       </div>
+      <p className="card__length">{props.length}</p>
     </div>
   )
 }

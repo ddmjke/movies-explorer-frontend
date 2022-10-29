@@ -8,12 +8,12 @@ export default function Profile() {
       <Navigation loggedIn={true} />
     </header>
     <section className="profile">
-      <NavLink className="navigation__logo" to="/"/>
       <h2 className="profile__title">Привет, FakeName!</h2>
 
       <form className="profile__form" noValidate onSubmit={e => e.preventDefault()}>
 
         <label className="profile__field">
+          <span className="profile__input-description">Имя</span>
           <input  
                 // onChange={handleChange}
                 name="name"
@@ -28,6 +28,7 @@ export default function Profile() {
         </label>
 
         <label className="profile__field">
+          <span className="profile__input-description">E-mail</span>
           <input  
                 // onChange={handleChange}
                 name="email"
@@ -44,14 +45,12 @@ export default function Profile() {
         <button 
               className="profile__submit-button"
               disabled={false}
+              onClick={e => e.preventDefault()}
               type="submit" >
           Редактировать
         </button>  
       </form>
-      <h2 className="profile__redirect">
-        Ещё не зарегистрированы?
         <NavLink className="profile__redirect-link" to="/">Выйти из аккаунта</NavLink>
-      </h2>
     </section>
     </>
   );

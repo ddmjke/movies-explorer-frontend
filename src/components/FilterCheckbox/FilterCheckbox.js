@@ -6,12 +6,13 @@ export default function FilterCheckbox() {
   return (
     <label className="search__toggle">
       <input
-            className = "search__toggle-checkbox"  
+            className = "search__toggle-chekbox"  
             type = "checkbox" 
             name = "shortFilter"
             id = "shortFilter"
             checked = {checked}
-            onChange = {toggleChecked}/>
+            onChange = {() => toggleChecked(!checked)}/>
+      <span className={`search__toggle__custom ${checked && 'search__toggle__custom_checked'}`}></span>
       <span className="search__toggle-description">Короткометражки</span>
     </label>
   )

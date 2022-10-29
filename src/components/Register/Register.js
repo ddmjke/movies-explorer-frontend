@@ -8,6 +8,8 @@ export default function Register() {
 
       <form className="register__form" noValidate onSubmit={e => e.preventDefault()}>
         <label className="register__field">
+        <span className="register__input-description">Имя</span>
+
           <input  
                 // onChange={handleChange}
                 name="name"
@@ -22,6 +24,8 @@ export default function Register() {
         </label>
 
         <label className="register__field">
+        <span className="register__input-description">E-mail</span>
+
           <input  
                 // onChange={handleChange}
                 name="email"
@@ -36,6 +40,8 @@ export default function Register() {
         </label>
 
         <label className="register__field">
+        <span className="register__input-description">password</span>
+
           <input  
                 // onChange={handleChange}
                 name="password"

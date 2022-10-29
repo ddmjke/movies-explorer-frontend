@@ -8,6 +8,8 @@ export default function LogIn() {
 
       <form className="login__form" noValidate onSubmit={e => e.preventDefault()}>
         <label className="login__field">
+          <span className="login__input-description">E-mail</span>
+
           <input  
                 // onChange={handleChange}
                 name="email"
@@ -22,6 +24,8 @@ export default function LogIn() {
         </label>
 
         <label className="login__field">
+          <span className="login__input-description">password</span>
+
           <input  
                 // onChange={handleChange}
                 name="password"
