@@ -1,0 +1,139 @@
+.navigation {
+  max-width: 100%;
+  padding: 18px 70px;
+  background-color: transparent;
+  display: flex;
+}
+
+.navigation__logo {
+  width: 38px;
+  height: 38px;
+  display: block;
+  background-image: url(../../images/Logo.svg);
+  margin-right: auto;
+}
+
+.navigation__sign-in {
+  background-color: #2be080;
+  color: #000;
+  border-radius: 3px;
+  text-decoration: none;
+  display: block;
+  width: 76px;
+  height: 32px;
+  font-size: 12px;
+  line-height: 32px;
+  font-weight: 500;
+  margin-left: 80px;
+  text-align: center;
+}
+
+.navigation__sign-up {
+  color: #fff;
+  text-decoration: none;
+  font-size: 12px;
+  line-height: 32px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.navigation__link {
+  text-decoration: none;
+  color: #000;
+  margin: auto 0 auto 20px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+.navigation__link_active {
+  font-weight: 500;
+}
+
+.navigation__profile-button {
+  margin-left: 50px;
+  color: #000;
+  border: 2px solid #aaa;
+  border-radius: 50px;
+  display: flex;
+  width: 100px;
+  height: 32px;
+  line-height: 32px;
+  text-decoration: none;
+  justify-content: space-around;
+}
+
+.navigation__profile-button::before {
+  content: url(../../images/ProfileIcon.svg);
+  display: inline;
+  width: 12px;
+  height: 32px;
+}
+
+.navigation__burger {
+  display: none;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.navigation__burger-line {
+  width: 22px;
+  margin: 6px 0;
+  border: 1px solid #000;
+  background-color: #000;
+  display: block;
+  transition: 1s; 
+}
+
+.navigation__burger:hover{
+  opacity: .8;
+}
+
+@media screen and (max-width: 770px) {
+  .navigation {
+    padding: 15px 30px;
+  }
+
+  .navigation__link {
+    display: none;
+    margin-left: 30px;
+  }
+
+  .navigation__sign-in {
+    margin-left: 30px;
+  }
+
+  .navigation__sign-up {
+    margin-left: 30px;
+  }
+
+  .navigation__profile-button {
+    display: none;
+  }
+
+  .navigation__burger {
+    display: block;
+  }
+}
+
+@media screen and (max-width: 440px) {
+  .navigation {
+    padding: 15px 15px;
+  }
+
+  .navigation__link {
+    margin-left: 14px;
+    font-size: 10px;
+  }
+
+  .navigation__sign-in {
+    margin-left: 14px;
+    font-size: 10px;
+  }
+
+  .navigation__sign-up {
+    margin-left: 14px;
+    font-size: 10px;
+  }
+}
