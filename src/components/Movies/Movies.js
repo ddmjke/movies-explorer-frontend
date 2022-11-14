@@ -4,14 +4,7 @@ import SearchForm from "../SearchForm/SearchForm";
 import MoviesCardList from "../MoviesCardList/MoviesCardList";
 import Card from "../Card/Card";
 
-export default function Movies() {
-  function generateFakeList() {
-    let fakeList = [];
-    for (let i = 0; i < 10 ; i++){
-      fakeList.push(<Card number={i} key={i*10} length="1h 30m"/>)
-    }
-    return fakeList;
-  };
+export default function Movies(props) {
 
   return (
     <>
@@ -19,11 +12,11 @@ export default function Movies() {
         <Navigation loggedIn={true}/>
       </header>
       <main className="movies">
-        <SearchForm />
+        <SearchForm handleSubmit={props.onSubmit}/>
        
-        <MoviesCardList hasMore={true}>
-        { 
-          generateFakeList()
+        <MoviesCardList hasMore={props.movies.length > 12}>
+        {
+          props.movies.map((movie, i) => <Card key={i} length={movie.duration} image={movie.image} name={movie.nameRU}/>)
         }
         </MoviesCardList>
       </main>

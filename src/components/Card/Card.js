@@ -1,11 +1,9 @@
-import fakePhoto from '../../images/fakePhoto.png';
-
 export default function Card(props) {
   return (
     <div className="card">
-      <img className="card__photo" src={fakePhoto} alt={`fake alt #${props.number}`} onClick={e => e} />
+      <img className="card__photo" src={props.image} alt={props.name} onClick={e => e} />
       <div className="card__caption">
-        <h2 className="card__textbox">fake description #{props.number}</h2>
+        <h2 className="card__textbox">{props.name}</h2>
         {
           props.savedList
             ?
@@ -14,7 +12,9 @@ export default function Card(props) {
             <button className="card__saved" type="button" onClick={e => e}></button>
         }
       </div>
-      <p className="card__length">{props.length}</p>
+      <p className="card__length">{`
+        ${Math.floor(props.length / 60)} ч ${props.length % 60} мин
+        `}</p>
     </div>
   )
 }
