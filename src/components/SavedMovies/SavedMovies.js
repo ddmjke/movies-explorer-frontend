@@ -4,27 +4,29 @@ import Card from "../Card/Card";
 import SearchForm from "../SearchForm/SearchForm";
 import MoviesCardList from "../MoviesCardList/MoviesCardList";
 
-export default function SavedMovies() {
-
-  function generateFakeList() {
-    let fakeList = [];
-    for (let i = 0; i < 10 ; i += 4){
-      fakeList.push(<Card number={i} key={i*10} savedList={true} length={'1h30m'}/>)
-    }
-    return fakeList;
-  };
-
+export default function SavedMovies(props) {
   return (
     <>
       <header className="header header__place_saved">
-        <Navigation loggedIn={true}/>
+        <Navigation loggedIn={props.loggedIn}/>
       </header>
 
       <main className="movies">
-        <SearchForm />
+        <SearchForm 
+          handleSubmit={props.onSubmit}
+          pending={props.pending}
+          errorText={props.errorText}  
+          />
         <MoviesCardList hasMore={false}>
           { 
-            generateFakeList()
+            props.movies.map((movie, i) => <Card 
+              key={i}
+              savedList={true}
+              length={movie.duration}
+              image={movie.image}
+              name={movie.nameRU}
+              onClick={() => {props.movieClick(movie)}} 
+            />)
           }
         </MoviesCardList>
       </main>

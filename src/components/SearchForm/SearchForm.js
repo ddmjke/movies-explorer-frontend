@@ -4,9 +4,9 @@ import useFormAndValidation from "../../hooks/useFormAndValidation";
 
 export default function SearchForm(props) {
 
-  const {values, handleChange, errors, isValid, resetForm} = useFormAndValidation();
+  const {values, handleChange, errors } = useFormAndValidation({ request: props.request || '' });
 
-  const [box, setBox] = React.useState(false);
+  const [box, setBox] = React.useState(props.box);
 
   return (
     <form className="search" noValidate onSubmit={e => {
@@ -22,12 +22,16 @@ export default function SearchForm(props) {
                 type="string" id="request" placeholder="Фильмы"
                 required
               />
-              <button className="search__submit" type="submit">Найти</button>
+              <button className={`search__submit ${props.pending && 'pendingbutton'}`} type="submit">Найти</button>
               <span className="search__error">
                 {errors.request}
               </span>          
         </label>
-        <FilterCheckbox onClick={() => setBox(!box)}/>
+        <FilterCheckbox checked={box} onClick={() => {
+          props.handleSubmit(values.request, !box);
+          setBox(!box);
+        }} />
+      <span className="networkerror">{props.errorText}</span>
     </form>
   );
 }

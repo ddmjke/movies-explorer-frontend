@@ -1,3 +1,4 @@
+
 export default function Card(props) {
   return (
     <div className="card">
@@ -7,9 +8,20 @@ export default function Card(props) {
         {
           props.savedList
             ?
-            <button className="card__unsave" type="button" onClick={e => e}></button>
+            <button 
+              className="card__unsave"
+              type="button"
+              onClick={props.onClick}
+              ></button>
             :
-            <button className="card__saved" type="button" onClick={e => e}></button>
+            <button 
+              className={`card__saved ${props.saved && 'card__saved_active'}`}
+              type="button"
+              onClick={() => {
+                if (!props.saved) props.onClick();
+                  else props.onDelete();
+                }}
+              ></button>
         }
       </div>
       <p className="card__length">{`

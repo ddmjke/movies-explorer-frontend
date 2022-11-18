@@ -1,6 +1,6 @@
 import './App.css';
 import React from 'react';
-import {  Routes, Route  } from 'react-router-dom';
+import {  Routes, Route, useNavigate  } from 'react-router-dom';
 import Main from '../Main/Main';
 import Movies from '../Movies/Movies';
 import SavedMovies from '../SavedMovies/SavedMovies';
@@ -10,15 +10,32 @@ import Profile from '../Profile/Profile';
 import NotFound from '../NotFound/NotFound';
 import moviesUtils from '../../utils/moviesUtils';
 import moviesApi from '../../utils/MoviesApi';
+import mainApi from '../../utils/MainApi';
+import { CurrentUserContext } from '../../context/CurrentUserContext'
+import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
 
 export default function App() {
-  //global variables
-  const [movies, setMovies] = React.useState(localStorage.getItem('movies') || []);
+  let navigate = useNavigate();
 
-  // searchBox variables
-  const [searchText, setSearchText] = React.useState(localStorage.getItem('serchText') || '');
-  const [searchBox, setSearchBox] = React.useState(localStorage.getItem('serchBox'));
-  const [filteredMovies, setFilteredMovies] = React.useState(localStorage.getItem('filteredMovies') || []);
+  //global variables
+  const [currentUser, setCurrentUser] = React.useState('');
+  const [movies, setMovies] = React.useState(localStorage.getItem('movies') || []);
+  const [savedMovies, setSavedMovies] = React.useState([]);
+  const [loggedIn, setLoggedIn] = React.useState(localStorage.getItem('token') && true);
+
+  //network status and errors
+  const [pending, setPending] = React.useState(false);
+  const [networkError, setNetworkError] = React.useState('');
+
+  // search variables
+  const [searchText, setSearchText] = React.useState('');
+  const [searchBox, setSearchBox] = React.useState(false);
+  const [filteredMovies, setFilteredMovies] = React.useState([]);
+
+  // savedSearch variables
+  const [savedSearchText, setSavedSearchText] = React.useState('');
+  const [savedSearchBox, setSavedSearchBox] = React.useState(false);
+  const [savedFilteredMovies, setSavedFilteredMovies] = React.useState([]);
 
   //loading initial movie list
   React.useEffect(() => {
@@ -26,35 +43,202 @@ export default function App() {
       .then(movies => movies.map(moviesUtils.preSave))
       .then(movies => setMovies(movies))
       .catch(e => console.log('Failed to load initial movies list :', e))
-      .finally(() => console.log('movieslist complete, happy fixing!'))
-  }, [])
+      .finally(() => {
+        if (localStorage.getItem('token')) mainApi.getUser()
+          .then((user) => {
+            setCurrentUser(user);
+            setLoggedIn(true);
+            return loadSavedMovies();
+          })
+          .catch(e => {
+            setLoggedIn(false);
+            console.log('your token is no good :', e);
+            navigate('/sign-in');
+          })
+      });
+  }, []);
+
+  const setErrorText = (text) => {
+    setNetworkError(text);
+    setTimeout(() => {setNetworkError('')}, 3000);
+  }
+
+  //user-related functions
+  const register = (args) => {
+    setPending(true);
+    return mainApi.register(args)
+      .then((res) => {
+        localStorage.setItem('token', res.token);
+        return mainApi.getUser();
+      })
+      .then((user) => {
+        setCurrentUser({
+          name: user.name,
+          email: user.email
+        });
+        setLoggedIn(true);
+        return loadSavedMovies();
+      })
+      .catch((e) => {
+        setErrorText(`failed to register :${e}`);
+      })
+      .finally(() => {
+        setPending(false);
+        navigate('/movies');
+      });
+
+  }
+
+  const logIn = (args) => {
+    setPending(true)
+    return mainApi.logIn(args)
+      .then((res) => {
+        localStorage.setItem('token', res.token);
+        return mainApi.getUser();
+      })
+      .then((user) => {
+        setCurrentUser({
+          name: user.name,
+          email: user.email
+        });
+        setLoggedIn(true);
+        return loadSavedMovies();
+      })
+      .catch((e) => setErrorText(`failed to logIn :${e}`))
+      .finally(() => {
+        setPending(false);
+        navigate('/movies');
+      })
+  }
+
+  const logOut = () => {
+    setLoggedIn(false);
+    localStorage.setItem('token', '');
+    setCurrentUser({
+      name: '',
+      email: ''
+    });
+    setSavedMovies([]);
+    localStorage.setItem('savedMovies', []);
+  }
+
+  const patchUser = (args) => {
+    setPending(true);
+    return mainApi.patchUser({
+      name: args.name,
+      email: args.email
+    })
+      .then(setCurrentUser)
+      .catch((e) => setErrorText(`failed to patch user :${e}`))
+      .finally(() => setPending(false))
+  }
+
+  //movies-related functions
+  const loadSavedMovies = () => {
+    return mainApi.getMovies()
+      .then(movies => {
+        setSavedMovies(movies || []);
+        return Promise.resolve(movies);
+      })
+  }
 
   const handleSearchSubmit = (text, box) => {
     setSearchText(text);
     setSearchBox(box);
-    setFilteredMovies(moviesUtils.searchName(movies, text, box));
+    if (text === '') {
+      setErrorText('Нужно ввести ключевое слово!');
+    } else {
+      const filtered = moviesUtils.searchName(movies, text, box);
+      if (filtered.length === 0) setErrorText('Found nothing, try something else!');
+      setFilteredMovies(filtered);
+    }
   }
 
+  const handleSavedSearchSubmit = (text, box) => {
+    setSavedSearchText(text);
+    setSavedSearchBox(box);
+    if (text === '') {
+      setErrorText('Нужно ввести ключевое слово!');
+    } else {
+      const filtered = moviesUtils.searchName(savedMovies, text, box);
+      if (filtered.length === 0) setErrorText('Found nothing, try something else!');
+      setSavedFilteredMovies(filtered);
+    }
+  }
+
+  const handleSaveClick = (args) => {
+    return mainApi.postMovie(args)
+      .then(() => {
+        return loadSavedMovies();
+      })
+  }
+
+  const handleDeleteClick = (args) => {
+    return mainApi.deleteMovie(args)
+      .then(() => {
+        return loadSavedMovies();
+      })
+      .then(movies => {
+        const filtered = moviesUtils.searchName(movies, savedSearchText, savedSearchBox);
+        setSavedFilteredMovies(filtered);
+      })
+  }
+
+  const findOneAndDelete = (args) => {
+    const savedOne = savedMovies.find(movie => movie.movieId === args.movieId);
+    handleDeleteClick(savedOne);
+  }
 
   return (
-    <div className="app">
-      <Routes>
-        <Route path="/" element={<Main />}/>
-        <Route path="/movies" element={
-          <Movies 
-            movies={filteredMovies}
-            onSubmit={handleSearchSubmit}
-            serchText={searchText}
-            searchBox={searchBox}  
-            />
-        }/>
-        <Route path="/saved-movies" element={<SavedMovies />}/>
-        <Route path="/profile" element={<Profile/>}/>
-        <Route path="/sign-in" element={<LogIn/>}/>
-        <Route path="/sign-up" element={<Register/>}/>
-        <Route path="*" element={<NotFound/>}/>
-      </Routes>      
-    </div>
+    <CurrentUserContext.Provider value={currentUser || ''}>
+      <div className="app">
+        <Routes>
+          <Route path="/" element={<Main loggedIn={loggedIn} />}/>
+
+          <Route path="/movies" element={
+            <ProtectedRoute loggedIn={loggedIn}>
+              <Movies 
+                loggedIn={loggedIn}
+                movies={filteredMovies}
+                savedMoviesId={savedMovies.map(movie => movie.movieId)}
+                onSubmit={handleSearchSubmit}
+                searchText={searchText}
+                searchBox={searchBox}
+                movieClick={handleSaveClick}
+                deleteMovieClick={findOneAndDelete}
+                pending={pending}
+                errorText={networkError}
+                />
+            </ProtectedRoute>
+          }/>
+          <Route path="/saved-movies" element={
+            <ProtectedRoute loggedIn={loggedIn}>
+              <SavedMovies 
+                loggedIn={loggedIn}
+                movies={savedFilteredMovies}
+                savedMovies={savedMovies}
+                onSubmit={handleSavedSearchSubmit}
+                searchText={savedSearchText}
+                searchBox={savedSearchBox}
+                movieClick={handleDeleteClick}
+                pending={pending}
+                errorText={networkError}
+              />
+            </ProtectedRoute>
+          }/>
+
+          <Route path="/profile" element={
+            <ProtectedRoute loggedIn={loggedIn}>
+              <Profile user={currentUser} onSubmit={patchUser} onLogOut={logOut} pending={pending} errorText={networkError}/>
+            </ProtectedRoute>
+          }/>
+          <Route path="/sign-in" element={<LogIn onSubmit={logIn} pending={pending} errorText={networkError}/>}/>
+          <Route path="/sign-up" element={<Register onSubmit={register} pending={pending} errorText={networkError}/>}/>
+
+          <Route path="*" element={<NotFound/>}/>
+        </Routes>      
+      </div>
+    </CurrentUserContext.Provider>
   );
 }
 

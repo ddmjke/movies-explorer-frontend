@@ -2,5 +2,6 @@
 
 ## .fig [here](https://disk.yandex.ru/d/HXsWof0u4SoTEA)
 
-## https api address [here](https://moredomains.nomoredomains.icu/).
-*yet to deploy on cloud
+## https frontend address [here](https://moredomains.nomoredomains.sbs/).
+
+## https api address [here](https://api.moredomains.nomoredomains.sbs/).

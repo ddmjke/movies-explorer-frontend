@@ -83,6 +83,16 @@
   margin-left: 6px;
 }
 
+.register__input-error {
+  color: #ee3465;
+  position: absolute;
+  left: 0;
+  bottom: -24px;
+  z-index: 2;
+  font-weight: 400;
+  font-size: 10px;
+}
+
 @media screen and (max-width: 440px) {
   .register {
     max-width: 260px;

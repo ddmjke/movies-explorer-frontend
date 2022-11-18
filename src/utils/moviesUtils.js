@@ -26,7 +26,7 @@ class MoviesUtils {
   }
 
   searchName(movies, text, checkbox) {
-    let filtered = movies;
+    let filtered = movies || [];
     if (checkbox) {filtered = filtered.filter(movie => movie.duration <= 40)};
     if (text) {filtered = filtered.filter((movie) => {
       return movie.nameRU.toLowerCase().includes(text.toLowerCase())

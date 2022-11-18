@@ -1,8 +1,6 @@
 import React from "react";
 
-export default function FilterCheckbox() {
-  const [checked, toggleChecked] = React.useState(false);
-
+export default function FilterCheckbox(props) {
   return (
     <label className="search__toggle">
       <input
@@ -10,9 +8,9 @@ export default function FilterCheckbox() {
             type = "checkbox" 
             name = "shortFilter"
             id = "shortFilter"
-            checked = {checked}
-            onChange = {() => toggleChecked(!checked)}/>
-      <span className={`search__toggle__custom ${checked && 'search__toggle__custom_checked'}`}></span>
+            checked = {props.checked}
+            onChange = {props.onClick}/>
+      <span className={`search__toggle__custom ${props.checked && 'search__toggle__custom_checked'}`}></span>
       <span className="search__toggle-description">Короткометражки</span>
     </label>
   )

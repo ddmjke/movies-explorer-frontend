@@ -3,7 +3,7 @@ import { useState, useCallback } from "react";
 export default function useFormAndValidation(args) {
   const [ values, setValues ] = useState(args || {});
   const [ errors, setErrors ] = useState({});
-  const [ isValid, setIsValid ] = useState(true);
+  const [ isValid, setIsValid ] = useState(false);
 
   const handleChange = (e) => {
     const {name, value} = e.target

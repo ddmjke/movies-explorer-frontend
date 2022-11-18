@@ -5,7 +5,7 @@ export default function MoviesCardList(props) {
         {props.children}
       </section>
       {
-        props.hasMore && <button className="moviescardlist__load-button">Ещё</button>
+        props.hasMore && <button className="moviescardlist__load-button" onClick={props.onMore}>Ещё</button>
       }
     </>
   )
