@@ -1,6 +1,6 @@
 import './App.css';
 import React from 'react';
-import {  Routes, Route, useNavigate  } from 'react-router-dom';
+import {  Routes, Route, useNavigate, json  } from 'react-router-dom';
 import Main from '../Main/Main';
 import Movies from '../Movies/Movies';
 import SavedMovies from '../SavedMovies/SavedMovies';
@@ -28,9 +28,9 @@ export default function App() {
   const [networkError, setNetworkError] = React.useState('');
 
   // search variables
-  const [searchText, setSearchText] = React.useState('');
-  const [searchBox, setSearchBox] = React.useState(false);
-  const [filteredMovies, setFilteredMovies] = React.useState([]);
+  const [searchText, setSearchText] = React.useState(localStorage.getItem('searchText') || '');
+  const [searchBox, setSearchBox] = React.useState(JSON.parse(localStorage.getItem('searchBox')));
+  const [filteredMovies, setFilteredMovies] = React.useState(JSON.parse(localStorage.getItem('filteredMovies')) || []);
 
   // savedSearch variables
   const [savedSearchText, setSavedSearchText] = React.useState('');
@@ -38,6 +38,13 @@ export default function App() {
   const [savedFilteredMovies, setSavedFilteredMovies] = React.useState([]);
 
   //loading initial movie list
+  React.useEffect(() => {
+    localStorage.setItem('filteredMovies', JSON.stringify(filteredMovies));
+    localStorage.setItem('searchBox', JSON.stringify(searchBox));
+    localStorage.setItem('searchText', searchText);
+
+  }, [filteredMovies, searchBox, searchText])
+
   React.useEffect(() => {
     moviesApi.getMovies()
       .then(movies => movies.map(moviesUtils.preSave))
@@ -51,6 +58,9 @@ export default function App() {
             return loadSavedMovies();
           })
           .catch(e => {
+            setSearchBox(false);
+            setSearchText('');
+            setFilteredMovies([]);
             setLoggedIn(false);
             console.log('your token is no good :', e);
             navigate('/sign-in');
@@ -102,6 +112,9 @@ export default function App() {
           email: user.email
         });
         setLoggedIn(true);
+        setFilteredMovies(JSON.parse(localStorage.getItem(filteredMovies)) || []);
+        setSearchBox(JSON.parse(localStorage.getItem('searchBox')) || '');
+        setSearchText(localStorage.getItem('searchText') || false);
         return loadSavedMovies();
       })
       .catch((e) => setErrorText(`failed to logIn :${e}`))
