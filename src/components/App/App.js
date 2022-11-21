@@ -1,6 +1,6 @@
 import './App.css';
 import React from 'react';
-import {  Routes, Route, useNavigate, json  } from 'react-router-dom';
+import {  Routes, Route, useNavigate } from 'react-router-dom';
 import Main from '../Main/Main';
 import Movies from '../Movies/Movies';
 import SavedMovies from '../SavedMovies/SavedMovies';
@@ -18,7 +18,7 @@ export default function App() {
   let navigate = useNavigate();
 
   //global variables
-  const [currentUser, setCurrentUser] = React.useState('');
+  const [currentUser, setCurrentUser] = React.useState(JSON.parse(localStorage.getItem('currentUser')) || null);
   const [movies, setMovies] = React.useState(localStorage.getItem('movies') || []);
   const [savedMovies, setSavedMovies] = React.useState([]);
   const [loggedIn, setLoggedIn] = React.useState(localStorage.getItem('token') && true);
@@ -43,7 +43,11 @@ export default function App() {
     localStorage.setItem('searchBox', JSON.stringify(searchBox));
     localStorage.setItem('searchText', searchText);
 
-  }, [filteredMovies, searchBox, searchText])
+  }, [filteredMovies, searchBox, searchText]);
+
+  React.useEffect(() => {
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  }, [currentUser]);
 
   React.useEffect(() => {
     moviesApi.getMovies()
@@ -62,6 +66,7 @@ export default function App() {
             setSearchText('');
             setFilteredMovies([]);
             setLoggedIn(false);
+            setCurrentUser(null);
             console.log('your token is no good :', e);
             navigate('/sign-in');
           })
@@ -87,14 +92,15 @@ export default function App() {
           email: user.email
         });
         setLoggedIn(true);
+        navigate('/movies');
         return loadSavedMovies();
       })
       .catch((e) => {
         setErrorText(`failed to register :${e}`);
+        return Promise.resolve();
       })
       .finally(() => {
         setPending(false);
-        navigate('/movies');
       });
 
   }
@@ -113,14 +119,21 @@ export default function App() {
         });
         setLoggedIn(true);
         setFilteredMovies(JSON.parse(localStorage.getItem(filteredMovies)) || []);
-        setSearchBox(JSON.parse(localStorage.getItem('searchBox')) || '');
-        setSearchText(localStorage.getItem('searchText') || false);
+        setSearchBox(JSON.parse(localStorage.getItem('searchBox')) || false);
+        setSearchText(localStorage.getItem('searchText') || '');
+        navigate('/movies');
         return loadSavedMovies();
       })
-      .catch((e) => setErrorText(`failed to logIn :${e}`))
+      .catch((e) => {
+        setLoggedIn(false);
+        setFilteredMovies([]);
+        setSearchBox(false);
+        setSearchText('');
+        setErrorText(`failed to logIn :${e}`);
+
+      })
       .finally(() => {
         setPending(false);
-        navigate('/movies');
       })
   }
 
@@ -131,6 +144,9 @@ export default function App() {
       name: '',
       email: ''
     });
+    setSearchBox(false);
+    setSearchText('');
+    setFilteredMovies([]);
     setSavedMovies([]);
     localStorage.setItem('savedMovies', []);
   }
@@ -151,6 +167,7 @@ export default function App() {
     return mainApi.getMovies()
       .then(movies => {
         setSavedMovies(movies || []);
+        setSavedFilteredMovies(movies || []);
         return Promise.resolve(movies);
       })
   }
@@ -170,13 +187,9 @@ export default function App() {
   const handleSavedSearchSubmit = (text, box) => {
     setSavedSearchText(text);
     setSavedSearchBox(box);
-    if (text === '') {
-      setErrorText('Нужно ввести ключевое слово!');
-    } else {
-      const filtered = moviesUtils.searchName(savedMovies, text, box);
-      if (filtered.length === 0) setErrorText('Found nothing, try something else!');
-      setSavedFilteredMovies(filtered);
-    }
+    const filtered = moviesUtils.searchName(savedMovies, text, box);
+    if (filtered.length === 0) setErrorText('Found nothing, try something else!');
+    setSavedFilteredMovies(filtered);
   }
 
   const handleSaveClick = (args) => {
@@ -245,8 +258,16 @@ export default function App() {
               <Profile user={currentUser} onSubmit={patchUser} onLogOut={logOut} pending={pending} errorText={networkError}/>
             </ProtectedRoute>
           }/>
-          <Route path="/sign-in" element={<LogIn onSubmit={logIn} pending={pending} errorText={networkError}/>}/>
-          <Route path="/sign-up" element={<Register onSubmit={register} pending={pending} errorText={networkError}/>}/>
+          <Route path="/sign-in" element={
+            <ProtectedRoute loggedIn={!loggedIn}>
+              <LogIn onSubmit={logIn} pending={pending} errorText={networkError}/>
+            </ProtectedRoute>
+          }/>
+          <Route path="/sign-up" element={
+            <ProtectedRoute loggedIn={!loggedIn}>
+              <Register onSubmit={register} pending={pending} errorText={networkError}/>
+            </ProtectedRoute>
+          }/>
 
           <Route path="*" element={<NotFound/>}/>
         </Routes>      

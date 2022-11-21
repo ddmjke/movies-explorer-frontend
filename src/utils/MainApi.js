@@ -56,7 +56,7 @@ class MainApi {
 
   patchUser(args) {
     const body = JSON.stringify({
-      "password": args.password,
+      "name": args.name,
       "email": args.email
     });
 

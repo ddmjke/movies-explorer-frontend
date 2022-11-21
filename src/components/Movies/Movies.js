@@ -61,6 +61,7 @@ export default function Movies(props) {
             length={movie.duration}
             image={movie.image}
             name={movie.nameRU}
+            trailer={movie.trailerLink}
             saved={props.savedMoviesId.includes(movie.movieId)}
             onClick={() => {props.movieClick(movie)}} 
             onDelete={() => {props.deleteMovieClick(movie)}}

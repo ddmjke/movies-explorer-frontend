@@ -2,7 +2,7 @@
 export default function Card(props) {
   return (
     <div className="card">
-      <img className="card__photo" src={props.image} alt={props.name} onClick={e => e} />
+      <img className="card__photo" src={props.image} alt={props.name} onClick={() => {window.open(props.trailer, '_blank')}} />
       <div className="card__caption">
         <h2 className="card__textbox">{props.name}</h2>
         {

@@ -23,6 +23,7 @@ export default function SavedMovies(props) {
               key={i}
               savedList={true}
               length={movie.duration}
+              trailer={movie.trailerLink}
               image={movie.image}
               name={movie.nameRU}
               onClick={() => {props.movieClick(movie)}} 
